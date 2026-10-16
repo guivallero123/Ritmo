@@ -1,0 +1,14 @@
+# Configurações pessoais do Xcode
+**/xcuserdata/
+*.xcuserstate
+
+# Arquivos temporários de compilação
+DerivedData/
+.build/
+
+# Arquivos temporários do macOS
+.DS_Store
+
+# Arquivos temporários do editor
+*.swp
+*~
