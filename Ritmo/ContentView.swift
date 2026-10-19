@@ -11,7 +11,7 @@ struct ContentView: View {
     // MARK: - INÍCIO DO ESTADO DA NAVEGAÇÃO
 
     // Guarda a seção selecionada na barra lateral.
-    // O ? indica que também pode não haver seleção (nil).
+    // O ? permite que a seleção também seja nil.
     @State private var selecao: Secao? = .hoje
 
     // MARK: - FIM DO ESTADO DA NAVEGAÇÃO
@@ -19,8 +19,7 @@ struct ContentView: View {
 
     // MARK: - INÍCIO DOS DADOS COMPARTILHADOS
 
-    // A ContentView é responsável por armazenar a lista.
-    // Outras telas podem receber acesso a esses dados.
+    // ContentView é dona da lista de hábitos.
     @State private var habitos: [Habito] = [
         Habito(nome: "Ler 20 minutos"),
         Habito(nome: "Caminhar 30 minutos")
@@ -33,15 +32,15 @@ struct ContentView: View {
 
     enum Secao: String, CaseIterable, Identifiable {
 
-        // Define as opções disponíveis na barra lateral.
+        // Opções disponíveis na barra lateral.
         case hoje = "Hoje"
         case habitos = "Hábitos"
         case rotinas = "Rotinas"
 
-        // Identificador utilizado pela List.
+        // Identificador de cada seção.
         var id: Self { self }
 
-        // Define o símbolo SF Symbols de cada seção.
+        // Ícone correspondente a cada seção.
         var simbolo: String {
 
             switch self {
@@ -79,7 +78,7 @@ struct ContentView: View {
 
             List(Secao.allCases, selection: $selecao) { secao in
 
-                // Exibe o nome e o ícone da seção.
+                // Mostra o nome e o ícone da seção.
                 Label(
                     secao.rawValue,
                     systemImage: secao.simbolo
@@ -107,9 +106,10 @@ struct ContentView: View {
             // INÍCIO DO CASO HOJE
             case .hoje:
 
-                // MUDANÇA 1:
-                // Usa a tela criada em HojeView.swift.
-                HojeView()
+                // A HojeView recebe os hábitos
+                // apenas para consultar os dados.
+                // Por isso, usamos habitos sem $.
+                HojeView(habitos: habitos)
 
             // FIM DO CASO HOJE
 
@@ -117,8 +117,8 @@ struct ContentView: View {
             // INÍCIO DO CASO HÁBITOS
             case .habitos:
 
-                // Passa acesso de leitura e escrita
-                // à lista de hábitos compartilhada.
+                // A HabitosView pode modificar a lista.
+                // Por isso, usamos $habitos (Binding).
                 HabitosView(habitos: $habitos)
 
             // FIM DO CASO HÁBITOS
@@ -127,8 +127,7 @@ struct ContentView: View {
             // INÍCIO DO CASO ROTINAS
             case .rotinas:
 
-                // MUDANÇA 2:
-                // Usa a tela criada em RotinasView.swift.
+                // Apresenta a tela de rotinas.
                 RotinasView()
 
             // FIM DO CASO ROTINAS
@@ -150,7 +149,7 @@ struct ContentView: View {
 
         } // FIM DO NAVIGATIONSPLITVIEW
 
-        // Define um tamanho mínimo para a janela.
+        // Define o tamanho mínimo da janela.
         .frame(minWidth: 650, minHeight: 400)
 
     } // FIM DO BODY
@@ -160,3 +159,4 @@ struct ContentView: View {
 // ================================================
 // FIM DA CONTENTVIEW
 // ================================================
+
