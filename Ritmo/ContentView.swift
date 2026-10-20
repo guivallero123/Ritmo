@@ -2,45 +2,40 @@
 import SwiftUI
 
 // ================================================
-// INÍCIO DA CONTENTVIEW
-// Responsável pela navegação principal do Ritmo.
+// INÍCIO DA TELA PRINCIPAL DO RITMO
 // ================================================
 
 struct ContentView: View {
 
-    // MARK: - INÍCIO DO ESTADO DA NAVEGAÇÃO
+    // MARK: - INÍCIO DOS ESTADOS
 
-    // Guarda a seção selecionada na barra lateral.
-    // O ? permite que a seleção também seja nil.
+    // Controla a seção selecionada na barra lateral.
     @State private var selecao: Secao? = .hoje
 
-    // MARK: - FIM DO ESTADO DA NAVEGAÇÃO
-
-
-    // MARK: - INÍCIO DOS DADOS COMPARTILHADOS
-
-    // ContentView é dona da lista de hábitos.
+    // Lista compartilhada de hábitos.
+    // Por enquanto, os dados ficam apenas na memória.
     @State private var habitos: [Habito] = [
         Habito(nome: "Ler 20 minutos"),
         Habito(nome: "Caminhar 30 minutos")
     ]
 
-    // MARK: - FIM DOS DADOS COMPARTILHADOS
+    // MARK: - FIM DOS ESTADOS
 
 
-    // MARK: - INÍCIO DAS SEÇÕES DO APLICATIVO
+    // MARK: - INÍCIO DAS SEÇÕES DE NAVEGAÇÃO
 
     enum Secao: String, CaseIterable, Identifiable {
 
-        // Opções disponíveis na barra lateral.
         case hoje = "Hoje"
         case habitos = "Hábitos"
         case rotinas = "Rotinas"
 
         // Identificador de cada seção.
-        var id: Self { self }
+        var id: Self {
+            self
+        }
 
-        // Ícone correspondente a cada seção.
+        // Ícone apresentado na barra lateral.
         var simbolo: String {
 
             switch self {
@@ -54,109 +49,85 @@ struct ContentView: View {
             case .rotinas:
                 return "calendar"
 
-            } // FIM DO SWITCH DOS SÍMBOLOS
+            } // FIM DO SWITCH
 
         } // FIM DA PROPRIEDADE simbolo
 
-    } // FIM DA ENUM Secao
+    } // FIM DO ENUM Secao
 
-    // MARK: - FIM DAS SEÇÕES DO APLICATIVO
+    // MARK: - FIM DAS SEÇÕES DE NAVEGAÇÃO
 
 
-    // ============================================
-    // INÍCIO DO BODY
-    // ============================================
+    // ================================================
+    // INÍCIO DA INTERFACE
+    // ================================================
 
     var body: some View {
 
-        // Divide a janela em barra lateral e conteúdo.
         NavigationSplitView {
 
-            // ====================================
-            // INÍCIO DA BARRA LATERAL
-            // ====================================
+            // MARK: - INÍCIO DA BARRA LATERAL
 
             List(Secao.allCases, selection: $selecao) { secao in
 
-                // Mostra o nome e o ícone da seção.
                 Label(
                     secao.rawValue,
                     systemImage: secao.simbolo
                 )
                 .tag(secao)
 
-            } // FIM DA LIST DA BARRA LATERAL
+            } // FIM DA LISTA DE NAVEGAÇÃO
 
             .navigationTitle("Ritmo")
             .listStyle(.sidebar)
 
-            // ====================================
-            // FIM DA BARRA LATERAL
-            // ====================================
+            // MARK: - FIM DA BARRA LATERAL
 
         } detail: {
 
-            // ====================================
-            // INÍCIO DO CONTEÚDO PRINCIPAL
-            // ====================================
+            // MARK: - INÍCIO DO CONTEÚDO PRINCIPAL
 
-            // Escolhe a tela com base na seleção.
             switch selecao {
 
-            // INÍCIO DO CASO HOJE
             case .hoje:
 
-                // A HojeView recebe os hábitos
-                // apenas para consultar os dados.
-                // Por isso, usamos habitos sem $.
-                HojeView(habitos: habitos)
+                // Binding: a tela Hoje pode consultar
+                // e modificar os hábitos.
+                HojeView(habitos: $habitos)
 
-            // FIM DO CASO HOJE
-
-
-            // INÍCIO DO CASO HÁBITOS
             case .habitos:
 
-                // A HabitosView pode modificar a lista.
-                // Por isso, usamos $habitos (Binding).
+                // A tela Hábitos usa a mesma lista.
                 HabitosView(habitos: $habitos)
 
-            // FIM DO CASO HÁBITOS
-
-
-            // INÍCIO DO CASO ROTINAS
             case .rotinas:
 
-                // Apresenta a tela de rotinas.
                 RotinasView()
 
-            // FIM DO CASO ROTINAS
-
-
-            // INÍCIO DO CASO SEM SELEÇÃO
             case nil:
 
                 Text("Selecione uma seção")
                     .foregroundStyle(.secondary)
 
-            // FIM DO CASO SEM SELEÇÃO
-
             } // FIM DO SWITCH
 
-            // ====================================
-            // FIM DO CONTEÚDO PRINCIPAL
-            // ====================================
+            // MARK: - FIM DO CONTEÚDO PRINCIPAL
 
         } // FIM DO NAVIGATIONSPLITVIEW
 
-        // Define o tamanho mínimo da janela.
         .frame(minWidth: 650, minHeight: 400)
 
     } // FIM DO BODY
 
+    // ================================================
+    // FIM DA INTERFACE
+    // ================================================
+
 } // FIM DA STRUCT ContentView
 
-// ================================================
-// FIM DA CONTENTVIEW
-// ================================================
 
+// MARK: - INÍCIO DA PRÉVIA
+
+#Preview {
+    ContentView()
+} // FIM DA PRÉVIA
