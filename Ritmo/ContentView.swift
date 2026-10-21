@@ -1,8 +1,10 @@
 
 import SwiftUI
+import SwiftData
 
 // ================================================
-// INÍCIO DA TELA PRINCIPAL DO RITMO
+// INÍCIO DA CONTENTVIEW
+// Organiza a navegação principal do Ritmo.
 // ================================================
 
 struct ContentView: View {
@@ -12,17 +14,14 @@ struct ContentView: View {
     // Controla a seção selecionada na barra lateral.
     @State private var selecao: Secao? = .hoje
 
-    // Lista compartilhada de hábitos.
-    // Por enquanto, os dados ficam apenas na memória.
-    @State private var habitos: [Habito] = [
-        Habito(nome: "Ler 20 minutos"),
-        Habito(nome: "Caminhar 30 minutos")
-    ]
+    // Consulta os hábitos armazenados pelo SwiftData.
+    @Query(sort: \Habito.nome)
+    private var habitos: [Habito]
 
     // MARK: - FIM DOS ESTADOS
 
 
-    // MARK: - INÍCIO DAS SEÇÕES DE NAVEGAÇÃO
+    // MARK: - INÍCIO DAS SEÇÕES
 
     enum Secao: String, CaseIterable, Identifiable {
 
@@ -30,12 +29,8 @@ struct ContentView: View {
         case habitos = "Hábitos"
         case rotinas = "Rotinas"
 
-        // Identificador de cada seção.
-        var id: Self {
-            self
-        }
+        var id: Self { self }
 
-        // Ícone apresentado na barra lateral.
         var simbolo: String {
 
             switch self {
@@ -49,13 +44,13 @@ struct ContentView: View {
             case .rotinas:
                 return "calendar"
 
-            } // FIM DO SWITCH
+            }
 
         } // FIM DA PROPRIEDADE simbolo
 
-    } // FIM DO ENUM Secao
+    } // FIM DO ENUM SECAO
 
-    // MARK: - FIM DAS SEÇÕES DE NAVEGAÇÃO
+    // MARK: - FIM DAS SEÇÕES
 
 
     // ================================================
@@ -76,7 +71,7 @@ struct ContentView: View {
                 )
                 .tag(secao)
 
-            } // FIM DA LISTA DE NAVEGAÇÃO
+            } // FIM DA LISTA DE SEÇÕES
 
             .navigationTitle("Ritmo")
             .listStyle(.sidebar)
@@ -85,20 +80,17 @@ struct ContentView: View {
 
         } detail: {
 
-            // MARK: - INÍCIO DO CONTEÚDO PRINCIPAL
+            // MARK: - INÍCIO DA NAVEGAÇÃO
 
             switch selecao {
 
             case .hoje:
 
-                // Binding: a tela Hoje pode consultar
-                // e modificar os hábitos.
-                HojeView(habitos: $habitos)
+                HojeView(habitos: habitos)
 
             case .habitos:
 
-                // A tela Hábitos usa a mesma lista.
-                HabitosView(habitos: $habitos)
+                HabitosView(habitos: habitos)
 
             case .rotinas:
 
@@ -111,7 +103,7 @@ struct ContentView: View {
 
             } // FIM DO SWITCH
 
-            // MARK: - FIM DO CONTEÚDO PRINCIPAL
+            // MARK: - FIM DA NAVEGAÇÃO
 
         } // FIM DO NAVIGATIONSPLITVIEW
 
@@ -123,11 +115,17 @@ struct ContentView: View {
     // FIM DA INTERFACE
     // ================================================
 
-} // FIM DA STRUCT ContentView
+} // FIM DA STRUCT CONTENTVIEW
 
 
 // MARK: - INÍCIO DA PRÉVIA
 
 #Preview {
+
     ContentView()
+        .modelContainer(
+            for: Habito.self,
+            inMemory: true
+        )
+
 } // FIM DA PRÉVIA

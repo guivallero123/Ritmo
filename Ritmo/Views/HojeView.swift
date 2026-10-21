@@ -1,5 +1,6 @@
 
 import SwiftUI
+import SwiftData
 
 // ================================================
 // INÍCIO DA TELA HOJE
@@ -10,16 +11,14 @@ struct HojeView: View {
 
     // MARK: - INÍCIO DOS DADOS RECEBIDOS
 
-    // Recebe a lista compartilhada de hábitos.
-    // @Binding permite ler e modificar os dados.
-    @Binding var habitos: [Habito]
+    // Lista de objetos persistentes do SwiftData.
+    let habitos: [Habito]
 
     // MARK: - FIM DOS DADOS RECEBIDOS
 
 
-    // MARK: - INÍCIO DOS CÁLCULOS DE PROGRESSO
+    // MARK: - INÍCIO DOS CÁLCULOS
 
-    // Conta todos os hábitos cadastrados.
     private var totalHabitos: Int {
 
         habitos.count
@@ -27,7 +26,6 @@ struct HojeView: View {
     } // FIM DA PROPRIEDADE totalHabitos
 
 
-    // Conta somente os hábitos concluídos.
     private var habitosConcluidos: Int {
 
         habitos.filter { habito in
@@ -36,7 +34,7 @@ struct HojeView: View {
 
     } // FIM DA PROPRIEDADE habitosConcluidos
 
-    // MARK: - FIM DOS CÁLCULOS DE PROGRESSO
+    // MARK: - FIM DOS CÁLCULOS
 
 
     // ================================================
@@ -63,7 +61,7 @@ struct HojeView: View {
             // MARK: - FIM DO CABEÇALHO
 
 
-            // MARK: - INÍCIO DA VERIFICAÇÃO DE HÁBITOS
+            // MARK: - INÍCIO DA VERIFICAÇÃO
 
             if habitos.isEmpty {
 
@@ -76,6 +74,10 @@ struct HojeView: View {
                         "Crie um hábito para começar a acompanhar seu progresso."
                     )
                 )
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity
+                )
 
                 // MARK: - FIM DO ESTADO VAZIO
 
@@ -83,16 +85,11 @@ struct HojeView: View {
 
                 // MARK: - INÍCIO DO CARTÃO DE PROGRESSO
 
-                // Usa o componente criado em ProgressoHabitosView
-                //Passamos os valores calculados pela Hojeview
-                
                 ProgressoHabitosView(
                     concluidos: habitosConcluidos,
                     total: totalHabitos
                 )
-                
-                
-                
+
                 // MARK: - FIM DO CARTÃO DE PROGRESSO
 
 
@@ -103,18 +100,15 @@ struct HojeView: View {
                     Text("Seus hábitos")
                         .font(.headline)
 
-
                     // MARK: - INÍCIO DA LISTA DE HÁBITOS
 
                     ForEach(habitos) { habito in
 
-                        //mostra uma linha reutilizavel
-                        
                         LinhaHabitoView(habito: habito) {
-                            alternarConclusao(do: habito)
-                        }
 
-                        
+                            alternarConclusao(do: habito)
+
+                        } // FIM DA AÇÃO DA LINHA
 
                     } // FIM DO FOREACH
 
@@ -126,7 +120,7 @@ struct HojeView: View {
 
             } // FIM DO IF / ELSE
 
-            // MARK: - FIM DA VERIFICAÇÃO DE HÁBITOS
+            // MARK: - FIM DA VERIFICAÇÃO
 
 
             Spacer()
@@ -150,24 +144,17 @@ struct HojeView: View {
 
     // MARK: - INÍCIO DAS FUNÇÕES
 
-    // Alterna a conclusão do hábito selecionado.
+    // Alterna a conclusão do hábito.
     private func alternarConclusao(do habito: Habito) {
 
-        // Procura o hábito pelo UUID.
-        guard let indice = habitos.firstIndex(where: {
-            $0.id == habito.id
-        }) else {
-            return
-        }
-
-        // Inverte true e false.
-        habitos[indice].concluido.toggle()
+        // Altera diretamente o objeto persistente.
+        habito.concluido.toggle()
 
     } // FIM DA FUNÇÃO alternarConclusao
 
     // MARK: - FIM DAS FUNÇÕES
 
-} // FIM DA STRUCT HojeView
+} // FIM DA STRUCT HOJEVIEW
 
 // ================================================
 // FIM DA TELA HOJE
@@ -178,9 +165,13 @@ struct HojeView: View {
 
 #Preview {
 
-    // Dados temporários para testar o estado vazio.
-    @Previewable @State var habitosExemplo: [Habito] = []
+    HojeView(habitos: [])
 
-    HojeView(habitos: $habitosExemplo)
+        // Usa um armazenamento temporário
+        // apenas para a prévia do Xcode.
+        .modelContainer(
+            for: Habito.self,
+            inMemory: true
+        )
 
 } // FIM DA PRÉVIA

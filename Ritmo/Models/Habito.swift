@@ -1,20 +1,34 @@
-
 import Foundation
+import SwiftData
 
-// ================================================
-// MODELO DE DADOS HABITO
-// Define as informações de um único hábito.
-// ================================================
+//INICIO DO MODELO HÁBITO
+//REPRESENTA UM HABITO SALVO PELO SWIFTDATA
 
-struct Habito: Identifiable {
+@Model
 
-    // Identificador único.
-    let id = UUID()
-
-    // Nome do hábito.
+final class Habito {
+    
+    //MARK: - INÍCIO DAS PROPRIEDADES
+    
+    //Nome informado pelo usuário
     var nome: String
+    
+    //Indica se o hábito foi concluido
+    var concluido: Bool
+    
+    // MARK: - FIM DAS PROPRIEDADES
+    
+    
+    //MARK: - INICIO DO INICIALIZADOR
+    
+    init(nome: String, concluido: Bool = false) {
+        
+        self.nome = nome
+        self.concluido = concluido
+        
+    } //FIM DO INIT
+    
+    // MARK: - FIM DO INICIALIZADOR
+    
 
-    // Estado de conclusão.
-    var concluido: Bool = false
-
-} // FIM DA ESTRUTURA HABITO
+} //FIM DA CLASS HABITO
